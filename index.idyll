@@ -1,18 +1,638 @@
-[meta title:"Lab5" description:"Short description of your project" /]
+[meta title:"SI649 Lab5" description:"This a lab homework of Si649." /]
 
 [Header
   fullWidth:true
-  title:"Lab5"
-  subtitle:"Welcome to Idyll. Open index.idyll to start writing"
-  author:"Your Name Here"
-  authorLink:"https://idyll-lang.org"
+  title:"SI649 Lab5"
+  subtitle:"Info Visualization on Presidents Polls' Data"
+  author:"Shukai Fan (unique name: kennyfan)"
   date:`(new Date()).toDateString()`
-  background:"#222222"
+  background:"#333333"
   color:"#ffffff"
    /]
 
 
-## Introduction
+## Insights of the President Polls Data Set
+This article mainly analysis the dataset of president polls from https://projects.fivethirtyeight.com/polls/.
+This dataset introduced the poll results between 2018 and 2020, which all of them are focusing on the 2020 US President Election. 
+In the following sections, I will share some insights of data set with you.
+
+### 10 Insights
+
+
+1. People in Massachusetts have the maximum percentage of votes towards the Democrats' candidates across states, while people in People in Kentucky have the maximum percentage of votes towards the Republicans' across states.
+2. Democrats reached their peak in popularity in the early part of the april of 2019. They reached support ratio of 65%, while the support ratio of Republicans droped to 35% at that time.
+3. Republicans reached their peak in popularity in the middle part of the July of 2019. They reached support ratio of 60%, while the support ratio of Democrats droped to 34% at that time.
+4. The popularity of both the Democrat and the Republican were varying around 45%, while during most time of the year these two Parties had a close preformance in support ratio. Even sometimes one party may gain significant advantage over another, the leading position did not last long. Only during the February and March of 2019, Republicans had a continues significant advantage over Democrats. 
+5. Within the Republicans, Donald Trump took the dominant position both in term of support radio and the number of polls conducted on him, which means more popularity obviously.
+6. Different from the Republicans, nobody took the dominant position like Trump. Obama and Winfrey have the best two mean support radio with in the polls. However, there are only three polls take these two leaders in to consideration. Closly following, Biden had both high popularity in sense of support radio and number of polls. This fact suggest Biden to be the main competitor on the Democrats side for Trump.
+7. The mean support radio of Biden during 2019 is 48.5%. Although, Biden was outstanding within Democrats during 2019. Sanders and Warren were also closely following behind with a lot of polls indicating their support radio to be 47% and 45%.
+8. For all the polls in this dataset most of the data are collected online, live Phone and IVR/Online.
+9. The total population of involved in this dataset is around 2,200,000.
+10. In this dataset, states like Montana, Wyoming, Idaho, Oregon, New Mexico, Oklahoma, etc. , are not included. Therefore, the dataset have some bias. The conclusion drawn from this dataset is may be misleading.
+
+
+
+###The Rise and Drop of the Popularity of Candidate Parties in 2019 
+The following interactive figure shows the rises and drops of the populartity of both Democrats and Republicans. In this interactive graph, blue represents the Democrats, while red represents the Republicans.
+To figure out more details about how the difference of the popularity of two Parties see .
+Several insights can be figured out from this figure. On the one hand, Democrats reached their peak in popularity in the early part of the april of 2019. They reached support ratio of 65%, while the support ratio of Republicans droped to 35% at that time. On the other hand, Republicans reached their peak in popularity in the middle part of the July of 2019. They reached support ratio of 60%, while the support ratio of Democrats droped to 34% at that time.
+Also, The popularity of both the Democrat and the Republican were varying around 45%, while during most time of the year these two Parties had a close preformance in support ratio. Even sometimes one party may gain significant advantage over another, the leading position did not last long. Only during the February and March of 2019, Republicans had a continues significant advantage over Democrats. 
+
+[data name:"polls" source:"president_polls2.csv" /]
+[IdyllVegaLite data:polls spec:`{
+  "config": {
+    "view": {
+      "width": 400,
+      "height": 300
+    },
+    "mark": {
+      "tooltip": null
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "opacity": 0.5
+      },
+      "encoding": {
+        "color": {
+          "type": "nominal",
+          "field": "candidate_party",
+          "legend": {
+            "title": "Color of the Party"
+          },
+          "scale": {
+            "domain": [
+              "DEM",
+              "REP"
+            ],
+            "range": [
+              "blue",
+              "red"
+            ]
+          }
+        },
+        "opacity": {
+          "condition": {
+            "value": 1,
+            "selection": "Party"
+          },
+          "value": 0.2
+        },
+        "x": {
+          "type": "temporal",
+          "field": "start_date",
+          "title": "Start date of the Poll"
+        },
+        "y": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct",
+          "title": "Percentage of vote"
+        }
+      },
+      "selection": {
+        "Party": {
+          "type": "single",
+          "fields": [
+            "candidate_party"
+          ],
+          "init": {
+            "candidate_party": "DEM"
+          },
+          "bind": {
+            "input": "radio",
+            "options": [
+              "DEM",
+              "REP"
+            ],
+            "name": "Select REP/DEM"
+          }
+        }
+      },
+      "transform": [
+        {
+          "filter": "(datum.candidate_party !== 'LIB')"
+        }
+      ]
+    },
+    {
+      "mark": {
+        "type": "point",
+        "color": "black",
+        "filled": true,
+        "size": 100
+      },
+      "encoding": {
+        "color": {
+          "type": "nominal",
+          "field": "candidate_party",
+          "scale": {
+            "domain": [
+              "DEM",
+              "REP"
+            ],
+            "range": [
+              "blue",
+              "red"
+            ]
+          }
+        },
+        "opacity": {
+          "condition": {
+            "value": 0.8,
+            "selection": "selector028"
+          },
+          "value": 0
+        },
+        "tooltip": [
+          {
+            "type": "temporal",
+            "field": "start_date"
+          },
+          {
+            "type": "quantitative",
+            "aggregate": "mean",
+            "field": "pct"
+          },
+          {
+            "type": "nominal",
+            "field": "candidate_party"
+          }
+        ],
+        "x": {
+          "type": "temporal",
+          "field": "start_date"
+        },
+        "y": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct",
+          "title": "Percentage of Vote"
+        }
+      },
+      "selection": {
+        "selector028": {
+          "type": "single",
+          "nearest": true,
+          "on": "mouseover",
+          "fields": [
+            "start_date"
+          ],
+          "empty": "none"
+        },
+        "selector027": {
+          "type": "interval",
+          "bind": "scales",
+          "encodings": [
+            "x"
+          ]
+        }
+      },
+      "transform": [
+        {
+          "filter": "(datum.candidate_party !== 'LIB')"
+        }
+      ]
+    },
+    {
+      "mark": {
+        "type": "rule",
+        "color": "gray",
+        "opacity": 0.5
+      },
+      "encoding": {
+        "x": {
+          "type": "temporal",
+          "field": "start_date"
+        }
+      },
+      "transform": [
+        {
+          "filter": "(datum.candidate_party !== 'LIB')"
+        },
+        {
+          "filter": {
+            "selection": "selector028"
+          }
+        }
+      ]
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "width": 10
+      },
+      "encoding": {
+        "color": {
+          "condition": {
+            "value": "blue",
+            "test": "(datum.diff > 0)"
+          },
+          "value": "red"
+        },
+        "opacity": {
+          "condition": {
+            "value": 0.9,
+            "selection": "selector028"
+          },
+          "value": 0.1
+        },
+        "tooltip": [
+          {
+            "type": "temporal",
+            "field": "start_date"
+          },
+          {
+            "type": "quantitative",
+            "field": "diff"
+          }
+        ],
+        "x": {
+          "type": "temporal",
+          "field": "start_date"
+        },
+        "y": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "diff"
+        }
+      },
+      "transform": [
+        {
+          "filter": "(datum.candidate_party !== 'LIB')"
+        }
+      ]
+    }
+  ],
+  "height": 300,
+  "title": "The Drop and Rise of the Popularity of Candidate Party (DEM/REP, 2019)",
+  "width": 600,
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.4.0.json"
+}` /]
+
+###Figure2
+[data name:"polls" source:"president_polls.csv" /]
+[IdyllVegaLite data:polls spec:`{
+  "config": {
+    "view": {
+      "width": 400,
+      "height": 300
+    },
+    "mark": {
+      "tooltip": null
+    }
+  },
+  "hconcat": [
+    {
+      "layer": [
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 150
+          },
+          "encoding": {
+            "color": {
+              "type": "nominal",
+              "field": "answer",
+              "legend": null
+            },
+            "opacity": {
+              "condition": {
+                "value": 1,
+                "selection": "selector032"
+              },
+              "value": 0.1
+            },
+            "tooltip": [
+              {
+                "type": "temporal",
+                "field": "start_date"
+              },
+              {
+                "type": "quantitative",
+                "aggregate": "mean",
+                "field": "pct"
+              },
+              {
+                "type": "nominal",
+                "field": "answer"
+              }
+            ],
+            "x": {
+              "type": "temporal",
+              "field": "start_date",
+              "title": "Start date of the Poll"
+            },
+            "y": {
+              "type": "quantitative",
+              "aggregate": "mean",
+              "field": "pct",
+              "title": "Percentage of vote"
+            }
+          },
+          "selection": {
+            "selector032": {
+              "type": "multi",
+              "fields": [
+                "answer"
+              ],
+              "empty": "none"
+            },
+            "selector031": {
+              "type": "interval",
+              "bind": "scales",
+              "encodings": [
+                "x"
+              ]
+            }
+          },
+          "transform": [
+            {
+              "filter": "(datum.candidate_party === 'DEM')"
+            }
+          ]
+        },
+        {
+          "mark": "line",
+          "encoding": {
+            "color": {
+              "type": "nominal",
+              "field": "answer",
+              "legend": null
+            },
+            "opacity": {
+              "condition": {
+                "value": 1,
+                "selection": "selector032"
+              },
+              "value": 0.1
+            },
+            "size": {
+              "condition": {
+                "value": 5,
+                "selection": "selector032"
+              },
+              "value": 0.1
+            },
+            "x": {
+              "type": "temporal",
+              "field": "start_date",
+              "title": "Start date of the Poll"
+            },
+            "y": {
+              "type": "quantitative",
+              "aggregate": "mean",
+              "field": "pct",
+              "title": "Percentage of vote"
+            }
+          },
+          "transform": [
+            {
+              "filter": "(datum.candidate_party === 'DEM')"
+            }
+          ]
+        }
+      ],
+      "height": 600,
+      "title": "The Popularity of the Politicians in Republican Party",
+      "width": 600
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "opacity": 0.8
+      },
+      "encoding": {
+        "color": {
+          "type": "nominal",
+          "field": "answer",
+          "legend": null
+        },
+        "opacity": {
+          "condition": {
+            "value": 1,
+            "selection": "selector032"
+          },
+          "value": 0.1
+        },
+        "tooltip": [
+          {
+            "type": "quantitative",
+            "aggregate": "mean",
+            "field": "pct"
+          },
+          {
+            "type": "nominal",
+            "field": "answer"
+          }
+        ],
+        "x": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct"
+        },
+        "y": {
+          "type": "nominal",
+          "axis": {
+            "orient": "right"
+          },
+          "field": "answer",
+          "sort": {
+            "field": "pct",
+            "op": "mean",
+            "order": "descending"
+          }
+        }
+      },
+      "height": 600,
+      "selection": {
+        "selector032": {
+          "type": "multi",
+          "fields": [
+            "answer"
+          ],
+          "empty": "none"
+        }
+      },
+      "title": "Mean Percentage of Vote",
+      "transform": [
+        {
+          "filter": "(datum.candidate_party === 'DEM')"
+        }
+      ],
+      "width": 100
+    }
+  ],
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.4.0.json"
+}` /]
+
+###Figure3
+[data name:"polls" source:"president_polls.csv" /]
+[IdyllVegaLite data:polls spec:`{
+  "config": {
+    "view": {
+      "width": 400,
+      "height": 300
+    },
+    "mark": {
+      "tooltip": null
+    }
+  },
+  "hconcat": [
+    {
+      "mark": {
+        "type": "bar",
+        "opacity": 1
+      },
+      "encoding": {
+        "color": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct",
+          "legend": null
+        },
+        "opacity": {
+          "condition": {
+            "value": 1,
+            "selection": "selector028"
+          },
+          "value": 0.1
+        },
+        "tooltip": [
+          {
+            "type": "quantitative",
+            "aggregate": "mean",
+            "field": "pct"
+          },
+          {
+            "type": "nominal",
+            "field": "state"
+          }
+        ],
+        "x": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct"
+        },
+        "y": {
+          "type": "nominal",
+          "axis": {
+            "orient": "left"
+          },
+          "field": "state",
+          "sort": {
+            "field": "pct",
+            "op": "mean",
+            "order": "descending"
+          }
+        }
+      },
+      "height": 300,
+      "selection": {
+        "selector028": {
+          "type": "single",
+          "fields": [
+            "state"
+          ],
+          "empty": "none",
+          "nearest": true,
+          "on": "mouseover"
+        }
+      },
+      "title": "Democrats' Mean Percentage of Vote",
+      "transform": [
+        {
+          "filter": "(datum.candidate_party === 'DEM')"
+        }
+      ],
+      "width": 300
+    },
+    {
+      "mark": {
+        "type": "bar",
+        "opacity": 1
+      },
+      "encoding": {
+        "color": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct",
+          "legend": null,
+          "scale": {
+            "range": [
+              "white",
+              "red"
+            ]
+          }
+        },
+        "opacity": {
+          "condition": {
+            "value": 1,
+            "selection": "selector028"
+          },
+          "value": 0.1
+        },
+        "tooltip": [
+          {
+            "type": "quantitative",
+            "aggregate": "mean",
+            "field": "pct"
+          },
+          {
+            "type": "nominal",
+            "field": "state"
+          }
+        ],
+        "x": {
+          "type": "quantitative",
+          "aggregate": "mean",
+          "field": "pct"
+        },
+        "y": {
+          "type": "nominal",
+          "axis": {
+            "orient": "left"
+          },
+          "field": "state",
+          "sort": {
+            "field": "pct",
+            "op": "mean",
+            "order": "descending"
+          }
+        }
+      },
+      "height": 300,
+      "selection": {
+        "selector028": {
+          "type": "single",
+          "fields": [
+            "state"
+          ],
+          "empty": "none",
+          "nearest": true,
+          "on": "mouseover"
+        }
+      },
+      "title": "Republicans' Mean Percentage of Vote",
+      "transform": [
+        {
+          "filter": "(datum.candidate_party === 'REP')"
+        }
+      ],
+      "width": 300
+    }
+  ],
+  "resolve": {
+    "scale": {
+      "color": "independent"
+    }
+  },
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.4.0.json"
+}` /]
+
 
 This is an Idyll post. It is generated via
 the file `index.idyll`. To compile this post using
